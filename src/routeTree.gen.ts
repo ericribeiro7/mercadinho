@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PedidoConfirmadoRouteImport } from './routes/pedido-confirmado'
+import { Route as ContaRouteImport } from './routes/conta'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,6 +25,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const PedidoConfirmadoRoute = PedidoConfirmadoRouteImport.update({
   id: '/pedido-confirmado',
   path: '/pedido-confirmado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaRoute = ContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/carrinho': typeof CarrinhoRoute
   '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/produtos': typeof ProdutosRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/carrinho': typeof CarrinhoRoute
   '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/produtos': typeof ProdutosRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/carrinho': typeof CarrinhoRoute
   '/checkout': typeof CheckoutRoute
+  '/conta': typeof ContaRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/produtos': typeof ProdutosRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/carrinho'
     | '/checkout'
+    | '/conta'
     | '/pedido-confirmado'
     | '/produtos'
     | '/produto/$id'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/carrinho'
     | '/checkout'
+    | '/conta'
     | '/pedido-confirmado'
     | '/produtos'
     | '/produto/$id'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/carrinho'
     | '/checkout'
+    | '/conta'
     | '/pedido-confirmado'
     | '/produtos'
     | '/produto/$id'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CarrinhoRoute: typeof CarrinhoRoute
   CheckoutRoute: typeof CheckoutRoute
+  ContaRoute: typeof ContaRoute
   PedidoConfirmadoRoute: typeof PedidoConfirmadoRoute
   ProdutosRoute: typeof ProdutosRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/pedido-confirmado'
       fullPath: '/pedido-confirmado'
       preLoaderRoute: typeof PedidoConfirmadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta': {
+      id: '/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof ContaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CarrinhoRoute: CarrinhoRoute,
   CheckoutRoute: CheckoutRoute,
+  ContaRoute: ContaRoute,
   PedidoConfirmadoRoute: PedidoConfirmadoRoute,
   ProdutosRoute: ProdutosRoute,
   ProdutoIdRoute: ProdutoIdRoute,
@@ -166,3 +187,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

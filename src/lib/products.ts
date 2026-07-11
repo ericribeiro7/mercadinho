@@ -9,6 +9,7 @@ export type Product = {
   emoji: string;
   tint: string;
   tag?: "promo" | "novo";
+  image?: string;
 };
 
 export const categories = [
@@ -22,7 +23,7 @@ export const categories = [
   { id: "limpeza", name: "Limpeza", emoji: "🧴" },
 ];
 
-export const products: Product[] = [
+const defaultProducts: Product[] = [
   { id: "1", name: "Maçã Gala", description: "Bandeja com 6 unidades", price: 9.9, oldPrice: 12.9, unit: "bandeja", category: "frutas", emoji: "🍎", tint: "#fdecec", tag: "promo" },
   { id: "2", name: "Banana Prata", description: "Cacho aprox. 1kg", price: 6.49, unit: "kg", category: "frutas", emoji: "🍌", tint: "#fdf7e2" },
   { id: "3", name: "Abacate", description: "Unidade selecionada", price: 4.99, unit: "un", category: "frutas", emoji: "🥑", tint: "#eef6e6" },
@@ -43,6 +44,22 @@ export const products: Product[] = [
   { id: "18", name: "Sabão em Pó", description: "Caixa 1kg", price: 16.9, oldPrice: 19.9, unit: "1kg", category: "limpeza", emoji: "🧺", tint: "#eef2fb", tag: "promo" },
 ];
 
-export const getProduct = (id: string) => products.find((p) => p.id === id);
+export function getProducts(): Product[] {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("admin_products");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return defaultProducts;
+      }
+    }
+  }
+  return defaultProducts;
+}
+
+export const products: Product[] = getProducts();
+
+export const getProduct = (id: string) => getProducts().find((p) => p.id === id);
 export const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

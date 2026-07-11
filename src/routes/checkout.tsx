@@ -54,7 +54,7 @@ function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-background pb-28 md:pb-12">
-      <Header />
+      <Header hideSearch={true} />
       <main className="mx-auto max-w-3xl px-4 py-5">
         <button
           onClick={() => navigate({ to: "/carrinho" })}

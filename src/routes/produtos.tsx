@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { categories, products } from "@/lib/products";
+import { categories, getProducts } from "@/lib/products";
 
 const search = z.object({
   cat: z.string().optional(),
@@ -25,6 +25,7 @@ function ProductsPage() {
   const activeCat = cat ?? "all";
   const query = (q ?? "").toLowerCase().trim();
 
+  const products = getProducts();
   const filtered = products.filter((p) => {
     if (activeCat !== "all" && p.category !== activeCat) return false;
     if (query && !`${p.name} ${p.description}`.toLowerCase().includes(query)) return false;

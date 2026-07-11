@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Minus, Plus, Trash2, Tag, ShoppingBag, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, ArrowLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { ProductThumb } from "@/components/ProductThumb";
@@ -17,25 +16,22 @@ const FREE_THRESHOLD = 99;
 
 function CartPage() {
   const { detailed, subtotal, setQty, remove, count } = useCart();
-  const [coupon, setCoupon] = useState("");
-  const [applied, setApplied] = useState<{ code: string; value: number } | null>(null);
 
   const fee = subtotal >= FREE_THRESHOLD || subtotal === 0 ? 0 : DELIVERY_FEE;
-  const discount = applied?.value ?? 0;
-  const total = Math.max(0, subtotal + fee - discount);
+  const total = Math.max(0, subtotal + fee);
 
-  const applyCoupon = () => {
-    const code = coupon.trim().toUpperCase();
-    if (code === "VERDE10") setApplied({ code, value: subtotal * 0.1 });
-    else if (code === "FRETE") setApplied({ code, value: fee });
-    else setApplied({ code: "INVÁLIDO", value: 0 });
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background pb-28 md:pb-12">
-      <Header />
+      <Header hideSearch={true} />
       <main className="mx-auto max-w-4xl px-4 py-5">
-        <h1 className="text-2xl font-bold tracking-tight">Seu carrinho</h1>
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={() => navigate({ to: "/produtos" })} className="rounded-full p-2 hover:bg-surface transition">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h1 className="text-2xl font-bold tracking-tight">Seu carrinho</h1>
+        </div>
         <p className="text-xs text-muted-foreground">{count} {count === 1 ? "item" : "itens"}</p>
 
         {detailed.length === 0 ? (
@@ -90,47 +86,16 @@ function CartPage() {
 
             <aside className="space-y-4">
               <div className="rounded-2xl border border-border bg-card p-4">
-                <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                  <Tag className="h-3.5 w-3.5" /> Cupom de desconto
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="Ex: VERDE10"
-                    className="h-11 flex-1 rounded-full border border-border bg-surface px-4 text-sm outline-none focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary-soft"
-                  />
-                  <button
-                    onClick={applyCoupon}
-                    className="h-11 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition hover:opacity-90"
-                  >
-                    Aplicar
-                  </button>
-                </div>
-                {applied && applied.value > 0 && (
-                  <p className="mt-2 text-[11px] text-primary">Cupom {applied.code} aplicado: -{formatBRL(applied.value)}</p>
-                )}
-                {applied && applied.value === 0 && (
-                  <p className="mt-2 text-[11px] text-destructive">Cupom inválido</p>
-                )}
-              </div>
-
-              <div className="rounded-2xl border border-border bg-card p-4">
                 <div className="space-y-1.5 text-sm">
                   <Row label="Subtotal" value={formatBRL(subtotal)} />
                   <Row label="Taxa de entrega" value={fee === 0 ? <span className="text-primary font-semibold">Grátis</span> : formatBRL(fee)} />
-                  {discount > 0 && <Row label="Desconto" value={`- ${formatBRL(discount)}`} />}
                 </div>
                 <div className="my-3 h-px bg-border" />
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm text-muted-foreground">Total</span>
                   <span className="text-xl font-bold">{formatBRL(total)}</span>
                 </div>
-                {subtotal < FREE_THRESHOLD && subtotal > 0 && (
-                  <p className="mt-2 text-[11px] text-muted-foreground">
-                    Faltam <strong className="text-foreground">{formatBRL(FREE_THRESHOLD - subtotal)}</strong> para frete grátis.
-                  </p>
-                )}
+
                 <Link
                   to="/checkout"
                   className="mt-4 flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground transition hover:opacity-90"

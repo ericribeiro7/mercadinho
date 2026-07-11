@@ -7,67 +7,67 @@ import { ProductThumb } from "./ProductThumb";
 export function ProductCard({ product }: { product: Product }) {
   const { items, add, setQty } = useCart();
   const qty = items.find((i) => i.id === product.id)?.qty ?? 0;
+  
+  // Calcular desconto percentual
+  const discount = product.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : null;
 
   return (
-    <div className="group flex flex-col rounded-2xl border border-border bg-card p-3 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]">
+    <div className="flex flex-col">
       <Link
         to="/produto/$id"
         params={{ id: product.id }}
-        className="relative block"
+        className="relative block mb-3 aspect-square"
       >
-        {product.tag && (
-          <span
-            className={`absolute left-1 top-1 z-10 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-              product.tag === "promo"
-                ? "bg-destructive text-destructive-foreground"
-                : "bg-primary text-primary-foreground"
-            }`}
-          >
-            {product.tag === "promo" ? "Promo" : "Novo"}
+        {discount && (
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-green-500 text-white px-2 py-1 text-xs font-bold">
+            -{discount}%
           </span>
         )}
         <ProductThumb product={product} size="md" />
       </Link>
 
-      <div className="mt-3 flex min-w-0 flex-col gap-0.5">
-        <Link
-          to="/produto/$id"
-          params={{ id: product.id }}
-          className="truncate text-sm font-semibold text-foreground"
-        >
-          {product.name}
-        </Link>
-        <p className="truncate text-xs text-muted-foreground">{product.description}</p>
+      <Link
+        to="/produto/$id"
+        params={{ id: product.id }}
+        className="text-sm font-semibold text-foreground truncate"
+      >
+        {product.name}
+      </Link>
+      
+      <p className="text-xs text-muted-foreground truncate">{product.description}</p>
+
+      <div className="mt-2 flex items-baseline gap-2">
+        {product.oldPrice && (
+          <span className="text-xs text-muted-foreground line-through">R$ {product.oldPrice.toFixed(2)}</span>
+        )}
+        <span className="text-lg font-bold text-foreground">R$ {product.price.toFixed(2)}</span>
       </div>
 
-      <div className="mt-2 flex items-baseline gap-1.5">
-        <span className="text-base font-bold text-foreground">{formatBRL(product.price)}</span>
-        {product.oldPrice && (
-          <span className="text-xs text-muted-foreground line-through">{formatBRL(product.oldPrice)}</span>
-        )}
-      </div>
+      <p className="text-xs text-muted-foreground mt-1">{product.unit}</p>
 
       <div className="mt-3">
         {qty === 0 ? (
           <button
             onClick={() => add(product.id)}
-            className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
+            className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-green-600 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" /> Adicionar
           </button>
         ) : (
-          <div className="flex h-10 w-full items-center justify-between rounded-full bg-primary-soft px-1 text-primary">
+          <div className="flex h-10 w-full items-center justify-between rounded-full bg-green-100 px-1 text-green-600">
             <button
               onClick={() => setQty(product.id, qty - 1)}
-              className="grid h-8 w-8 place-items-center rounded-full bg-card text-foreground shadow-[var(--shadow-soft)] transition active:scale-95"
+              className="grid h-8 w-8 place-items-center rounded-full bg-white text-green-600 shadow-sm transition active:scale-95"
               aria-label="Diminuir"
             >
               <Minus className="h-4 w-4" />
             </button>
-            <span className="text-sm font-semibold text-accent-foreground">{qty}</span>
+            <span className="text-sm font-semibold">{qty}</span>
             <button
               onClick={() => setQty(product.id, qty + 1)}
-              className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground shadow-[var(--shadow-soft)] transition active:scale-95"
+              className="grid h-8 w-8 place-items-center rounded-full bg-green-600 text-white shadow-sm transition active:scale-95"
               aria-label="Aumentar"
             >
               <Plus className="h-4 w-4" />

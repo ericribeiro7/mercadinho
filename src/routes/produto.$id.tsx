@@ -6,7 +6,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { ProductThumb } from "@/components/ProductThumb";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart";
-import { formatBRL, getProduct, products } from "@/lib/products";
+import { formatBRL, getProduct, getProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/produto/$id")({
   head: ({ params }) => {
@@ -27,6 +27,7 @@ function ProductDetail() {
   const product = getProduct(id);
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  const products = getProducts();
 
   if (!product) {
     return (

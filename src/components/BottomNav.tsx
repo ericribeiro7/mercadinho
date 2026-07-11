@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, LayoutGrid, ShoppingBag, User } from "lucide-react";
+import { Home, LayoutGrid, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 export function BottomNav() {
@@ -10,12 +10,11 @@ export function BottomNav() {
     { to: "/" as const, label: "Início", icon: Home },
     { to: "/produtos" as const, label: "Categorias", icon: LayoutGrid },
     { to: "/carrinho" as const, label: "Carrinho", icon: ShoppingBag, badge: count },
-    { to: "/conta" as const, label: "Conta", icon: User },
   ];
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
-      <ul className="mx-auto grid max-w-md grid-cols-4">
+      <ul className="mx-auto grid grid-cols-3">
         {items.map(({ to, label, icon: Icon, badge }) => {
           const active = pathname === to || (to !== "/" && pathname.startsWith(to));
           return (
